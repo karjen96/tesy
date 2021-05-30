@@ -39,6 +39,7 @@ public class BlogResource {
         this.blogService = blogService;
     }
 
+
     /**
      * {@code POST  /blogs} : Create a new blog.
      *
@@ -116,4 +117,5 @@ public class BlogResource {
         blogService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
+
 }

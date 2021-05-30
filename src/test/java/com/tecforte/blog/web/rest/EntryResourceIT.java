@@ -19,7 +19,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
@@ -32,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.tecforte.blog.domain.enumeration.Emoji;
+
 /**
  * Integration tests for the {@link EntryResource} REST controller.
  */
@@ -80,37 +80,30 @@ public class EntryResourceIT {
         MockitoAnnotations.initMocks(this);
         final EntryResource entryResource = new EntryResource(entryService);
         this.restEntryMockMvc = MockMvcBuilders.standaloneSetup(entryResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter)
-            .setValidator(validator).build();
+                .setCustomArgumentResolvers(pageableArgumentResolver).setControllerAdvice(exceptionTranslator)
+                .setConversionService(createFormattingConversionService()).setMessageConverters(jacksonMessageConverter)
+                .setValidator(validator).build();
     }
 
     /**
      * Create an entity for this test.
      *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
+     * This is a static method, as tests for other entities might also need it, if
+     * they test an entity which requires the current entity.
      */
     public static Entry createEntity(EntityManager em) {
-        Entry entry = new Entry()
-            .title(DEFAULT_TITLE)
-            .emoji(DEFAULT_EMOJI)
-            .content(DEFAULT_CONTENT);
+        Entry entry = new Entry().title(DEFAULT_TITLE).emoji(DEFAULT_EMOJI).content(DEFAULT_CONTENT);
         return entry;
     }
+
     /**
      * Create an updated entity for this test.
      *
-     * This is a static method, as tests for other entities might also need it,
-     * if they test an entity which requires the current entity.
+     * This is a static method, as tests for other entities might also need it, if
+     * they test an entity which requires the current entity.
      */
     public static Entry createUpdatedEntity(EntityManager em) {
-        Entry entry = new Entry()
-            .title(UPDATED_TITLE)
-            .emoji(UPDATED_EMOJI)
-            .content(UPDATED_CONTENT);
+        Entry entry = new Entry().title(UPDATED_TITLE).emoji(UPDATED_EMOJI).content(UPDATED_CONTENT);
         return entry;
     }
 
@@ -126,10 +119,8 @@ public class EntryResourceIT {
 
         // Create the Entry
         EntryDTO entryDTO = entryMapper.toDto(entry);
-        restEntryMockMvc.perform(post("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isCreated());
+        restEntryMockMvc.perform(post("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isCreated());
 
         // Validate the Entry in the database
         List<Entry> entryList = entryRepository.findAll();
@@ -150,16 +141,13 @@ public class EntryResourceIT {
         EntryDTO entryDTO = entryMapper.toDto(entry);
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restEntryMockMvc.perform(post("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isBadRequest());
+        restEntryMockMvc.perform(post("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isBadRequest());
 
         // Validate the Entry in the database
         List<Entry> entryList = entryRepository.findAll();
         assertThat(entryList).hasSize(databaseSizeBeforeCreate);
     }
-
 
     @Test
     @Transactional
@@ -171,10 +159,8 @@ public class EntryResourceIT {
         // Create the Entry, which fails.
         EntryDTO entryDTO = entryMapper.toDto(entry);
 
-        restEntryMockMvc.perform(post("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isBadRequest());
+        restEntryMockMvc.perform(post("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isBadRequest());
 
         List<Entry> entryList = entryRepository.findAll();
         assertThat(entryList).hasSize(databaseSizeBeforeTest);
@@ -190,10 +176,8 @@ public class EntryResourceIT {
         // Create the Entry, which fails.
         EntryDTO entryDTO = entryMapper.toDto(entry);
 
-        restEntryMockMvc.perform(post("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isBadRequest());
+        restEntryMockMvc.perform(post("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isBadRequest());
 
         List<Entry> entryList = entryRepository.findAll();
         assertThat(entryList).hasSize(databaseSizeBeforeTest);
@@ -206,15 +190,14 @@ public class EntryResourceIT {
         entryRepository.saveAndFlush(entry);
 
         // Get all the entryList
-        restEntryMockMvc.perform(get("/api/entries?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(entry.getId().intValue())))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
-            .andExpect(jsonPath("$.[*].emoji").value(hasItem(DEFAULT_EMOJI.toString())))
-            .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())));
+        restEntryMockMvc.perform(get("/api/entries?sort=id,desc")).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(entry.getId().intValue())))
+                .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE.toString())))
+                .andExpect(jsonPath("$.[*].emoji").value(hasItem(DEFAULT_EMOJI.toString())))
+                .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getEntry() throws Exception {
@@ -222,21 +205,19 @@ public class EntryResourceIT {
         entryRepository.saveAndFlush(entry);
 
         // Get the entry
-        restEntryMockMvc.perform(get("/api/entries/{id}", entry.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id").value(entry.getId().intValue()))
-            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE.toString()))
-            .andExpect(jsonPath("$.emoji").value(DEFAULT_EMOJI.toString()))
-            .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT.toString()));
+        restEntryMockMvc.perform(get("/api/entries/{id}", entry.getId())).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id").value(entry.getId().intValue()))
+                .andExpect(jsonPath("$.title").value(DEFAULT_TITLE.toString()))
+                .andExpect(jsonPath("$.emoji").value(DEFAULT_EMOJI.toString()))
+                .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT.toString()));
     }
 
     @Test
     @Transactional
     public void getNonExistingEntry() throws Exception {
         // Get the entry
-        restEntryMockMvc.perform(get("/api/entries/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restEntryMockMvc.perform(get("/api/entries/{id}", Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
@@ -249,18 +230,14 @@ public class EntryResourceIT {
 
         // Update the entry
         Entry updatedEntry = entryRepository.findById(entry.getId()).get();
-        // Disconnect from session so that the updates on updatedEntry are not directly saved in db
+        // Disconnect from session so that the updates on updatedEntry are not directly
+        // saved in db
         em.detach(updatedEntry);
-        updatedEntry
-            .title(UPDATED_TITLE)
-            .emoji(UPDATED_EMOJI)
-            .content(UPDATED_CONTENT);
+        updatedEntry.title(UPDATED_TITLE).emoji(UPDATED_EMOJI).content(UPDATED_CONTENT);
         EntryDTO entryDTO = entryMapper.toDto(updatedEntry);
 
-        restEntryMockMvc.perform(put("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isOk());
+        restEntryMockMvc.perform(put("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isOk());
 
         // Validate the Entry in the database
         List<Entry> entryList = entryRepository.findAll();
@@ -280,10 +257,8 @@ public class EntryResourceIT {
         EntryDTO entryDTO = entryMapper.toDto(entry);
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restEntryMockMvc.perform(put("/api/entries")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(entryDTO)))
-            .andExpect(status().isBadRequest());
+        restEntryMockMvc.perform(put("/api/entries").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(entryDTO))).andExpect(status().isBadRequest());
 
         // Validate the Entry in the database
         List<Entry> entryList = entryRepository.findAll();
@@ -299,9 +274,8 @@ public class EntryResourceIT {
         int databaseSizeBeforeDelete = entryRepository.findAll().size();
 
         // Delete the entry
-        restEntryMockMvc.perform(delete("/api/entries/{id}", entry.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isNoContent());
+        restEntryMockMvc.perform(delete("/api/entries/{id}", entry.getId()).accept(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNoContent());
 
         // Validate the database contains one less item
         List<Entry> entryList = entryRepository.findAll();
