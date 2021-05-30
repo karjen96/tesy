@@ -1,4 +1,5 @@
 package com.tecforte.blog.domain;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -35,7 +36,6 @@ public class Entry extends AbstractAuditingEntity implements Serializable {
     @Column(name = "emoji", nullable = false)
     private Emoji emoji;
 
-
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "content", nullable = false)
@@ -45,7 +45,8 @@ public class Entry extends AbstractAuditingEntity implements Serializable {
     @JsonIgnoreProperties("entries")
     private Blog blog;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not
+    // remove
     public Long getId() {
         return id;
     }
@@ -105,7 +106,8 @@ public class Entry extends AbstractAuditingEntity implements Serializable {
     public void setBlog(Blog blog) {
         this.blog = blog;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+    // setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -125,11 +127,7 @@ public class Entry extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "Entry{" +
-            "id=" + getId() +
-            ", title='" + getTitle() + "'" +
-            ", emoji='" + getEmoji() + "'" +
-            ", content='" + getContent() + "'" +
-            "}";
+        return "Entry{" + "id=" + getId() + ", title='" + getTitle() + "'" + ", emoji='" + getEmoji() + "'"
+                + ", content='" + getContent() + "'" + "}";
     }
 }
