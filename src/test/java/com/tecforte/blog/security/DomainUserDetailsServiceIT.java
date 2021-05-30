@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
@@ -87,7 +86,8 @@ public class DomainUserDetailsServiceIT {
     @Test
     @Transactional
     public void assertThatUserCanBeFoundByLoginIgnoreCase() {
-        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_ONE_LOGIN.toUpperCase(Locale.ENGLISH));
+        UserDetails userDetails = domainUserDetailsService
+                .loadUserByUsername(USER_ONE_LOGIN.toUpperCase(Locale.ENGLISH));
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_ONE_LOGIN);
     }
@@ -103,7 +103,8 @@ public class DomainUserDetailsServiceIT {
     @Test
     @Transactional
     public void assertThatUserCanBeFoundByEmailIgnoreCase() {
-        UserDetails userDetails = domainUserDetailsService.loadUserByUsername(USER_TWO_EMAIL.toUpperCase(Locale.ENGLISH));
+        UserDetails userDetails = domainUserDetailsService
+                .loadUserByUsername(USER_TWO_EMAIL.toUpperCase(Locale.ENGLISH));
         assertThat(userDetails).isNotNull();
         assertThat(userDetails.getUsername()).isEqualTo(USER_TWO_LOGIN);
     }
@@ -119,8 +120,8 @@ public class DomainUserDetailsServiceIT {
     @Test
     @Transactional
     public void assertThatUserNotActivatedExceptionIsThrownForNotActivatedUsers() {
-        assertThatExceptionOfType(UserNotActivatedException.class).isThrownBy(
-            () -> domainUserDetailsService.loadUserByUsername(USER_THREE_LOGIN));
+        assertThatExceptionOfType(UserNotActivatedException.class)
+                .isThrownBy(() -> domainUserDetailsService.loadUserByUsername(USER_THREE_LOGIN));
     }
 
 }
